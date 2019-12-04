@@ -1,0 +1,73 @@
+11d10
+< #include <mpi.h>
+14,17d12
+< int nprocs;
+< int myid;
+< double dbuf[NX],dbufr[NX];
+< 
+19,23d13
+<   
+<   MPI_Init(&argc,&argv);
+<   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+<   MPI_Comm_rank(MPI_COMM_WORLD,&myid);
+< 
+34,37c24,25
+<       if (myid == 0) {
+< 			  printf("%le %le %le %le\n",DT*step,ekin,epot,etot);
+<       }
+<     }
+---
+> 			printf("%le %le %le %le\n",DT*step,ekin,epot,etot);
+> 		}
+40,41d27
+<   MPI_Finalize();
+< 
+109c95
+< 		x = dx*i + myid*LX;;
+---
+> 		x = dx*i;
+134c120
+< 		x = dx*sx-X0 + myid*LX;
+---
+> 		x = dx*sx-X0;
+146d131
+<   MPI_Allreduce(&psisq, &psisq, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+219,248d203
+<   
+<   MPI_Status status;
+<   MPI_Request r;
+<   int plw = (myid-1+nprocs)%nprocs; /* Lower partner process */
+<   int pup = (myid+1 )%nprocs; /* Upper partner process */
+< 
+<   /* Cache boundary wave function value at the lower end */
+< 	for (s=0; s<=1; s++) {
+<     dbuf[s] = psi[NX][s];
+<   }
+< 
+<   MPI_Send(dbuf, 2, MPI_DOUBLE, pup, 0, MPI_COMM_WORLD);
+<   MPI_Irecv(dbufr, 2, MPI_DOUBLE, plw, 0, MPI_COMM_WORLD, &r); 
+<   MPI_Wait(&r, &status);
+<   
+< 	for (s=0; s<=1; s++) {
+<     psi[0][s] = dbufr[s];
+<   }
+<   
+<   /* Cache boundary wave function value at the upper end */
+< 	for (s=0; s<=1; s++) {
+<     dbuf[s] = psi[1][s];
+<   }
+<   MPI_Send(dbuf, 2, MPI_DOUBLE, plw, 1, MPI_COMM_WORLD);
+<   MPI_Irecv(dbufr, 2, MPI_DOUBLE, pup, 1, MPI_COMM_WORLD, &r); 
+<   MPI_Wait(&r, &status);
+< 
+< 	for (s=0; s<=1; s++) {
+<     psi[NX+1][s] = dbufr[s];
+<   }
+251d205
+<   /*
+256d209
+<   */
+284d236
+<   MPI_Allreduce(&ekin, &ekin, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+291d242
+<   MPI_Allreduce(&epot, &epot, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);

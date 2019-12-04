@@ -1,0 +1,11 @@
+#!/bin/bash
+#SBATCH --ntasks-per-node=1
+#SBATCH --nodes=2
+#SBATCH --cpus-per-task=2
+#SBATCH --gres=gpu:2
+#SBATCH --time=00:10:00
+#SBATCH --output=qd1.out
+#SBATCH -A lc_an2
+WORK_HOME=/home/rcf-proj/an2/youweizh
+cd $WORK_HOME/QD
+srun -n $SLURM_NTASKS ./a.out
